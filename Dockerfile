@@ -1,4 +1,4 @@
-FROM ubi9
+FROM registry.access.redhat.com/ubi9/ubi
 
 ARG target=default
 
