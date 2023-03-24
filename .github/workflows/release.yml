@@ -79,7 +79,7 @@ jobs:
     with:
       name: ${{ needs.build-release.outputs.imageName }}
       tag: ${{ needs.build-release.outputs.imageVersion }}
-      sign: false
+      sign: true
     secrets:
       registry: ${{ needs.build-release.outputs.registry }}
       user: ${{ github.actor }}
