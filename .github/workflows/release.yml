@@ -14,7 +14,7 @@ jobs:
     name: Build and push tag images
     strategy: 
       matrix:
-        architecture: [amd64,ppc64le,arm64,s390x]
+        architecture: [amd64,arm64]
         platform: [linux]
     runs-on: ubuntu-latest
     steps:
