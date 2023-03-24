@@ -34,6 +34,12 @@ on:
 
 jobs:
   create-and-push-multiarch-manifest:
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
     name: create and push a multiarch manifest to the repo
     runs-on: ubuntu-latest
     steps:
