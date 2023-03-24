@@ -1,0 +1,71 @@
+name: Build and push a multi-arch manifest
+
+# Usage example:
+#    uses: ./.github/workflows/build-multiarch.yml
+#    with:
+#      name: preflight
+#      tag: 89123ab
+#    secrets:
+#      registry: ${{ secrets.IMAGE_REGISTRY }}
+#      user: ${{ secrets.REGISTRY_USER }}
+#      password: ${{ secrets.REGISTRY_PASSWORD }}
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+      sign:
+        type: boolean
+        default: false
+        required: false
+    secrets:
+      registry:
+        required: true
+      user:
+        required: true
+      password:
+        required: true
+        
+
+jobs:
+  create-and-push-multiarch-manifest:
+    name: create and push a multiarch manifest to the repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install cosign
+        if: ${{ inputs.sign == true }}
+        uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0
+        with:
+          cosign-release: 'v2.0.0'
+
+      # Authenticate to container image registry to push the image
+      - name: Podman Login
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ secrets.registry }}
+          username: ${{ secrets.user }}
+          password: ${{ secrets.password }}
+
+      - name: Create and add to manifest
+        run: |
+          buildah manifest create ${{ inputs.name }}
+          buildah manifest add ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}-linux-amd64
+          buildah manifest add ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}-linux-ppc64le
+          buildah manifest add ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}-linux-arm64
+          buildah manifest add ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}-linux-s390x
+
+      - name: Push manifest
+        run: |
+            podman manifest push ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}  --all
+
+      # TODO: Sign the digest.
+      - name: Sign the published manifest
+        if: ${{ inputs.sign == true }}
+        run: |
+          cosign sign -y ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }} 
+
