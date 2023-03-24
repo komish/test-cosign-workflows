@@ -14,6 +14,9 @@ env:
 
 jobs:
   build-release:
+    permissions:
+      contents: read
+      packages: write
     name: Build and push tag images
     strategy: 
       matrix:
