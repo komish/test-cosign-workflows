@@ -56,6 +56,7 @@ jobs:
       run: echo "Image pushed to ${{ steps.push-image.outputs.registry-paths }}"
 
     outputs:
+      registry: ${{ env.REGISTRY }}
       imageName: ${{ env.IMAGE_NAME }}
       imageVersion: ${{ env.RELEASE_TAG }}
 
@@ -67,7 +68,7 @@ jobs:
       tag: ${{ needs.build-release.outputs.imageVersion }}
       sign: false
     secrets:
-      registry: ${{ env.REGISTRY }}
+      registry: ${{ needs.build-release.outputs.registry }}
       user: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
