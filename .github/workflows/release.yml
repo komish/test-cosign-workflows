@@ -33,7 +33,7 @@ jobs:
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: ${{ env.RELEASE_TAG }}-${{ matrix.platform }}-${{ matrix.architecture }}
         archs: ${{ matrix.architecture }}
         build-args: |
@@ -67,7 +67,7 @@ jobs:
       tag: ${{ needs.build-release.outputs.imageVersion }}
       sign: false
     secrets:
-      registry: ${{ env.IMAGE_REGISTRY }}
+      registry: ${{ env.REGISTRY }}
       user: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -78,7 +78,7 @@ jobs:
   #     name: ${{ needs.build-release.outputs.imageName }}
   #     tag: ${{ needs.build-release.outputs.imageVersion }}
   #   secrets:
-  #     registry: ${{ env.IMAGE_REGISTRY }}
+  #     registry: ${{ env.REGISTRY }}
   #     user: ${{ github.actor }}
   #     password: ${{ secrets.GITHUB_TOKEN }}
   #     token: ${{ secrets.GITHUB_TOKEN }}
