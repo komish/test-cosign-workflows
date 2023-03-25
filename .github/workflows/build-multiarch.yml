@@ -73,5 +73,5 @@ jobs:
       - name: Sign the published manifest
         if: ${{ inputs.sign == true }}
         run: |
-          cosign sign --yes --recursive ${{ secrets.registry }}/${{ inputs.name }}:${{ steps.push-manifest.outputs.digest }}
+          cosign sign --yes --recursive ${{ secrets.registry }}/${{ inputs.name }}@${{ steps.push-manifest.outputs.digest }}
 
