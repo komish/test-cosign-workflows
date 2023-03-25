@@ -64,12 +64,14 @@ jobs:
           buildah manifest add ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}-linux-arm64
 
       - name: Push manifest
+        id: push-manifest
         run: |
-            podman manifest push ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}  --all
+            podman manifest push --digestfile imagedigest ${{ inputs.name }} ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }}  --all
+            echo "digest=$(cat imagedigest)" >> $GITHUB_OUTPUT
 
       # TODO: Sign the digest.
       - name: Sign the published manifest
         if: ${{ inputs.sign == true }}
         run: |
-          cosign sign -y ${{ secrets.registry }}/${{ inputs.name }}:${{ inputs.tag }} 
+          cosign sign --yes --recursive ${{ secrets.registry }}/${{ inputs.name }}:${{ steps.push-manifest.outputs.digest }}
 

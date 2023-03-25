@@ -4,9 +4,6 @@ on:
   release:
     types:
       - published
-  push:
-    # temporarily test tag pushes to see if we get the action as the github.actor
-    tags: [ '*.*.*-alpha*' ]
 
 env:
   REGISTRY: ghcr.io
